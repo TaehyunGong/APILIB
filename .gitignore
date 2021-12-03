@@ -1,0 +1,23 @@
+### All Project Compile Code ignore ###
+**/target/**
+**/.mvn/wrapper/**
+**/.mvn/src/main/**/target/
+**/.mvn/src/test/**/target/
+**/mvnw
+**/mvnw.cmd
+
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
