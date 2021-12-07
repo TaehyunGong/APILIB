@@ -1,5 +1,6 @@
 package com.example.naver.login;
 
+import com.example.naver.login.vo.NaverLoginProfile;
 import com.example.naver.login.vo.NaverLoginProfileResponse;
 import com.example.naver.login.vo.NaverLoginVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,7 @@ import java.util.Map;
 public class NaverLogin {
 
     @Autowired
-    private WebClient webClient;
-
-    @Value("${api.naver.client_id}")
-    private String client_id;
-
-    @Value("${api.naver.client_secret}")
-    private String client_secret;
+    private NaverLoginService service;
 
     @GetMapping("/")
     public String index(){
@@ -33,44 +28,13 @@ public class NaverLogin {
     @GetMapping("/NaverLoginCallback")
     public @ResponseBody String NaverLoginCallback(@RequestParam Map<String, String> resValue){
 
-        // ----- Access_token 발급 -----
-        final String uri = UriComponentsBuilder
-                            .fromUriString("https://nid.naver.com")
-                            .path("/oauth2.0/token")
-                            .queryParam("grant_type", "authorization_code")
-                            .queryParam("client_id", this.client_id)
-                            .queryParam("client_secret", this.client_secret)
-                            .queryParam("code", resValue.get("code"))
-                            .queryParam("state", resValue.get("state"))
-                            .build()
-                            .encode()
-                            .toUriString();
+        // code 를 받아오면 code 를 사용하여 access_token를 발급받는다.
+        final NaverLoginVo naverLoginVo = service.requestNaverLoginAcceccToken(resValue, "authorization_code");
 
-        final NaverLoginVo naverLoginVo = webClient
-                                            .get()
-                                            .uri(uri)
-                                            .retrieve()
-                                            .bodyToMono(NaverLoginVo.class)
-                                            .block();
-        // ----------------------------
+        // access_token를 사용하여 사용자의 고유 id값을 가져온다.
+        final NaverLoginProfile naverLoginProfile = service.requestNaverLoginProfile(naverLoginVo);
 
-        // ----- 프로필 API 호출 (Unique한 id 값을 가져오기 위함) -----
-        final String profileUri = UriComponentsBuilder
-                .fromUriString("https://openapi.naver.com")
-                .path("/v1/nid/me")
-                .build()
-                .encode()
-                .toUriString();
-
-        final NaverLoginProfileResponse profileResponse = webClient
-                .get()
-                .uri(profileUri)
-                .header("Authorization", "Bearer " + naverLoginVo.getAccess_token())
-                .retrieve()
-                .bodyToMono(NaverLoginProfileResponse.class)
-                .block();
-
-        return profileResponse.getResponse().toString();
+        return naverLoginProfile.toString();
     }
 
 }
