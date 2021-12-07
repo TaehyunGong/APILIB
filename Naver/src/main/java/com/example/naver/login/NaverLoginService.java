@@ -34,7 +34,7 @@ public class NaverLoginService {
      *          3) 삭제: 'delete'
      * @return
      */
-    public NaverLoginVo requestNaverLoginAcceccToken(Map<String, String> resValue, String grant_type){
+    public NaverLoginVo requestNaverLoginAccessToken(Map<String, String> resValue, String grant_type){
         final String uri = UriComponentsBuilder
                 .fromUriString("https://nid.naver.com")
                 .path("/oauth2.0/token")
