@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 public class BootPayAccessTokenTest {
 
@@ -25,6 +23,7 @@ public class BootPayAccessTokenTest {
         String access_key = bootPayAccessToken.getAccessToken(webClient);
 
         // then
+        System.out.println(access_key);
         Assertions.assertNotNull(access_key);
     }
 }

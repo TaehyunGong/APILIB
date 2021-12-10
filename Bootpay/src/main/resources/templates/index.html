@@ -6,6 +6,7 @@
 </head>
     <!-- BootPay cdn -->
     <script src="https://cdn.bootpay.co.kr/js/bootpay-3.3.2.min.js" type="application/javascript"></script>
+    <script src="/webjars/jquery/3.2.1/dist/jquery.min.js"></script>
 
 <body>
 
@@ -23,7 +24,7 @@
         function bootpay(){
 
             BootPay.request({
-                price: '1000', //실제 결제되는 가격
+                price: '100', //실제 결제되는 가격
                 application_id: "61b0c40be38c300029d2c5a8",
                 name: '블링블링 마스카라', //결제창에서 보여질 이름
                 pg: 'toss',
@@ -34,7 +35,7 @@
                         item_name: '나는 아이템', //상품명
                         qty: 1, //수량
                         unique: '123', //해당 상품을 구분짓는 primary key
-                        price: 1000, //상품 단가
+                        price: 100, //상품 단가
                         cat1: 'TOP', // 대표 상품의 카테고리 상, 50글자 이내
                         cat2: '티셔츠', // 대표 상품의 카테고리 중, 50글자 이내
                         cat3: '라운드 티', // 대표상품의 카테고리 하, 50글자 이내
@@ -73,10 +74,12 @@
                 //결제가 실행되기 전에 수행되며, 주로 재고를 확인하는 로직이 들어갑니다.
                 //주의 - 카드 수기결제일 경우 이 부분이 실행되지 않습니다.
                 console.log(data);
-                var enable = true; // 재고 수량 관리 로직 혹은 다른 처리
+                var enable = true;//checkPayment(data); // 재고 수량 관리 로직 혹은 다른 처리
                 if (enable) {
+                    alert('success ' + enable)
                     BootPay.transactionConfirm(data); // 조건이 맞으면 승인 처리를 한다.
                 } else {
+                    alert("false" + enable)
                     BootPay.removePaymentWindow(); // 조건이 맞지 않으면 결제 창을 닫고 결제를 승인하지 않는다.
                 }
             }).close(function (data) {
@@ -85,10 +88,33 @@
             }).done(function (data) {
                 //결제가 정상적으로 완료되면 수행됩니다
                 //비즈니스 로직을 수행하기 전에 결제 유효성 검증을 하시길 추천합니다.
+                alert('done')
                 console.log(data);
             });
         }
 
+        // 결제된 정보가 유효한기 검증하기 위한 함수
+        function checkPayment(data){
+
+            $.ajax({
+                type: 'post',
+                url: '/paymentConfirm',
+                async: false,
+                headers: {'Content-Type': 'application/json'},
+                dataType: 'json',
+                data: data,
+                done: function(data){
+                    console.log('done - ' + data);
+                    return true;
+                },
+                error: function(data){
+                    console.log('error - ' + data);
+                    console.log(data);
+                    return false;
+                }
+            })
+
+        }
     </script>
 
 </html>

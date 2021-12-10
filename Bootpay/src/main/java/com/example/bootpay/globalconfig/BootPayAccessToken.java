@@ -1,5 +1,6 @@
 package com.example.bootpay.globalconfig;
 
+import com.example.bootpay.payment.vo.BootPayAccessTokenVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,8 @@ public class BootPayAccessToken {
     // 2개의 ID를 json String 으로 변경
     private final String SECRET_JSON_KEY;
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     public BootPayAccessToken(@Value("${api.bootpay.rest_applicationid}") String REST_APPLICATION_ID
                             , @Value("${api.bootpay.rest_private_key}") String REST_PRIVATE_KEY) throws JsonProcessingException {
         this.REST_APPLICATION_ID = REST_APPLICATION_ID;
@@ -31,7 +34,7 @@ public class BootPayAccessToken {
         map.put("private_key", this.REST_PRIVATE_KEY);
         map.put("application_id", this.REST_APPLICATION_ID);
 
-        SECRET_JSON_KEY = new ObjectMapper().writer().writeValueAsString(map);
+        SECRET_JSON_KEY = objectMapper.writer().writeValueAsString(map);
     }
 
     /**
@@ -46,12 +49,14 @@ public class BootPayAccessToken {
                 .encode()
                 .toUriString();
 
-        return webClient.post()
+        final BootPayAccessTokenVo bootPayAccessTokenVo = webClient.post()
                 .uri(uri)
                 .header("Content-Type", "application/json")
                 .bodyValue(SECRET_JSON_KEY)
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(BootPayAccessTokenVo.class)
                 .block();
+
+        return bootPayAccessTokenVo.getData().getToken();
     }
 }
