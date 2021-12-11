@@ -66,6 +66,7 @@ public class PaymentService {
 
         String jsonBody = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 
+        // TODO: jsonBody 데이터의 encoding 문제가 있는것 같음.
         HashMap hashMap = webClient.post()
                 .uri(uri)
                 .header("Authorization", accessToken)

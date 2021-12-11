@@ -23,7 +23,7 @@
 
     <br>
 
-    <button onclick="">결제 취소</button>
+    <button onclick="paymentCancel()">결제 취소</button>
 
 </body>
 
@@ -110,9 +110,8 @@
                 type: 'post',
                 url: '/paymentConfirm',
                 async: false,
-                headers: {'Content-Type': 'application/json'},
-                dataType: 'json',
-                data: '61b42b0fd3d0570025f9e52b', //data.receipt_id,
+                headers: {'Content-Type': 'text/html'},
+                data: data.receipt_id,
                 success: function (data){
                     console.log('success - ' + data);
                     chk = true;
@@ -129,12 +128,13 @@
         // 결제 취소
         function paymentCancel(){
             var receipt_id = $('#receipt_id').val();
-
             $.ajax({
-                url: '/paymentCancel',
                 type: 'post',
+                url: '/paymentCancel',
+                async: false,
+                headers: {'Content-Type': 'text/html'},
                 data: receipt_id,
-                done: function (data){
+                success: function (data){
                     alert('결제취소 성공')
                     console.log(data);
                 },
