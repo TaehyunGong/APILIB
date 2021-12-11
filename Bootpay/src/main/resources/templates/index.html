@@ -16,12 +16,22 @@
 
     <button onclick="bootpay()">결제</button>
 
+    <br>
+
+    <h3>결제 번호</h3>
+    <textarea id="receipt_id"></textarea>
+
+    <br>
+
+    <button onclick="">결제 취소</button>
+
 </body>
 
     <script type="application/javascript">
 
         // 결제
         function bootpay(){
+            $('#receipt_id').val('');
 
             BootPay.request({
                 price: '100', //실제 결제되는 가격
@@ -74,7 +84,7 @@
                 //결제가 실행되기 전에 수행되며, 주로 재고를 확인하는 로직이 들어갑니다.
                 //주의 - 카드 수기결제일 경우 이 부분이 실행되지 않습니다.
                 console.log(data);
-                var enable = true;//checkPayment(data); // 재고 수량 관리 로직 혹은 다른 처리
+                var enable = checkPayment(data); // 재고 수량 관리 로직 혹은 다른 처리
                 if (enable) {
                     alert('success ' + enable)
                     BootPay.transactionConfirm(data); // 조건이 맞으면 승인 처리를 한다.
@@ -88,32 +98,51 @@
             }).done(function (data) {
                 //결제가 정상적으로 완료되면 수행됩니다
                 //비즈니스 로직을 수행하기 전에 결제 유효성 검증을 하시길 추천합니다.
-                alert('done')
+                $('#receipt_id').val(data.receipt_id);
                 console.log(data);
             });
         }
 
         // 결제된 정보가 유효한기 검증하기 위한 함수
         function checkPayment(data){
-
+            var chk = false;
             $.ajax({
                 type: 'post',
                 url: '/paymentConfirm',
                 async: false,
                 headers: {'Content-Type': 'application/json'},
                 dataType: 'json',
-                data: data,
-                done: function(data){
-                    console.log('done - ' + data);
-                    return true;
+                data: '61b42b0fd3d0570025f9e52b', //data.receipt_id,
+                success: function (data){
+                    console.log('success - ' + data);
+                    chk = true;
                 },
                 error: function(data){
                     console.log('error - ' + data);
+                    chk = false;
+                }
+            });
+
+            return chk;
+        }
+
+        // 결제 취소
+        function paymentCancel(){
+            var receipt_id = $('#receipt_id').val();
+
+            $.ajax({
+                url: '/paymentCancel',
+                type: 'post',
+                data: receipt_id,
+                done: function (data){
+                    alert('결제취소 성공')
                     console.log(data);
-                    return false;
+                },
+                error: function (data){
+                    alert('결제취소 실패');
+                    console.log(data);
                 }
             })
-
         }
     </script>
 
