@@ -13,5 +13,7 @@ public class BootPayCancelVo {
     private String cancelled_tax_free;
     private String revoked_at;
     private String tid;
+    private String order_id;
+    private String cancel_id;
 
 }

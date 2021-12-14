@@ -135,7 +135,7 @@
                 headers: {'Content-Type': 'text/html'},
                 data: receipt_id,
                 success: function (data){
-                    alert('결제취소 성공')
+                    alert('결제취소 성공 - ' + data.cancel_id)
                     console.log(data);
                 },
                 error: function (data){
